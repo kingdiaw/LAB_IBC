@@ -12,7 +12,7 @@ WiFiClient client;
 const char* broker ="xxx.xxx.xxx.xxx";  //Server PTSS
 const char* unique_id = "espXX";
 String topic_subscribe = "espXX/room1/led1"; 
-String topic_publish = "espXX/humidity";     
+String topic_publish = "espXX/DHT22";     
 MQTTClient mqtt(1024);
 
 //DHT Pin
