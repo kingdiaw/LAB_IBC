@@ -1,14 +1,16 @@
 //(1)-Include Library
 #include <WiFiClientSecure.h>
+#include <ESP32_WiFiManager.h>  //https://github.com/kingdiaw/ESP32_WiFiManager
 
 //(2)-Define Constant Value
-const char* ssid     = "4G-CPE-141B";     // your network SSID (name of wifi network)
-const char* password = "king@535382";     // your network password
 const char* host = "api.thingspeak.com";
 const int port = 443;
+String apikey = "HE2QBIOR16QPLQQR";
 const float adcToLux = 0.29625;           //Constant Convert ADC to LUX value
+
 //(3)-Object Mapping
 WiFiClientSecure client;
+ESP32_WiFiManager wm("ESP32Wifi-AP", 2, 15); //WiFi AP = "ESP32Wifi-AP", LED at Pin 2, Trigger at Pin 15
 
 //(4)-I/O Mapping
 const byte ldrPin35 = 35;
@@ -24,28 +26,6 @@ extern "C" {
 }
 
 //(6) User Define Function
-//6.1 Function - setup_wifi()
-void setup_wifi() {
-  WiFi.disconnect();
-  delay(3000);
-  // We start by connecting to a WiFi network
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-}
-
 //6.2 Function - update_suhu()
 void update_field1(float dd) {
   Serial.println("\nStarting connection to server...");
@@ -56,7 +36,7 @@ void update_field1(float dd) {
     Serial.println("Connected to server!");
     //Prepare HTTP header
     String header = "";
-    header = "GET https://api.thingspeak.com/update?api_key=HE2QBIOR16QPLQQR&field1=" + (String(dd)) + " HTTP/1.0\n";
+    header = "GET https://api.thingspeak.com/update?api_key=" + apikey + "&field1=" + (String(dd)) + " HTTP/1.0\n";
     header += "Host: api.thingspeak.com\n";
     header += "Connection: close\n\n";
     Serial.print(header);
@@ -82,12 +62,16 @@ void update_field1(float dd) {
 
 void setup() {
   //Initialize serial and wait for port to open:
+  pinMode(sw1Pin34, INPUT);
+  WiFi.mode(WIFI_STA);
   Serial.begin(115200);
-  pinMode(sw1Pin34,INPUT);
-  setup_wifi();
+  wm.begin();
 }
 
 void loop() {
+  // put your main code here, to run repeatedly:
+  wm.running();
+  
   //get internal temp of ESP32
   uint8_t temp_farenheit = temprature_sens_read();
   //convert farenheit to celcius
