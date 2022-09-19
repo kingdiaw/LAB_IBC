@@ -36,7 +36,7 @@ void update_field1(float dd) {
     Serial.println("Connected to server!");
     //Prepare HTTP header
     String header = "";
-    header = "GET https://api.thingspeak.com/update?api_key=" + apikey + "&field1=" + (String(dd)) + " HTTP/1.0\n";
+    header = "GET /update?api_key=" + apikey + "&field1=" + (String(dd)) + " HTTP/1.1\n";
     header += "Host: api.thingspeak.com\n";
     header += "Connection: close\n\n";
     Serial.print(header);
